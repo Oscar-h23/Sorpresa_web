@@ -25,7 +25,6 @@
     h1 {
       font-size: 2.5em;
       margin-bottom: 20px;
-      animation: fadeIn 1.5s ease-in-out;
     }
     #message {
       font-size: 1.5em;
@@ -34,7 +33,6 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
       min-height: 30px;
     }
-    /* Contenedor de botones */
     #buttonContainer {
       display: flex;
       gap: 20px;
@@ -67,11 +65,6 @@
     #noBtn:hover {
       background-color: #d32f2f;
     }
-    /* Efecto de movimiento suave */
-    .moving {
-      transition: top 0.5s ease, left 0.5s ease;
-    }
-    /* Estilos para la ventana modal */
     .modal {
       display: none;
       position: fixed;
@@ -81,7 +74,6 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.7);
-      animation: fadeIn 0.5s ease;
     }
     .modal-content {
       background-color: #fff;
@@ -92,7 +84,6 @@
       max-width: 500px;
       text-align: center;
       position: relative;
-      animation: popUp 0.5s ease;
     }
     .modal-content p {
       font-size: 1.3em;
@@ -115,24 +106,9 @@
     .close:hover {
       color: #000;
     }
-    /* Animaciones */
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-    @keyframes popUp {
-      from {opacity: 0; transform: scale(0.8);}
-      to {opacity: 1; transform: scale(1);}
-    }
-    #message {
-      position: relative;
-      z-index: 2;
-    }
-  
-    /* Ajuste de la imagen en la modal */
-    .modal-content img {
-      max-width: 80%;
-      border-radius: 10px;
+    @keyframes subir {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-100vh); opacity: 0; }
     }
   </style>
 </head>
@@ -146,35 +122,34 @@
     </div>
   </div>
   
-  <!-- Ventana modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeBtn">&times;</span>
-      <p>Decisión correcta, ya sabía que aceptarías. Tomaste la mejor decisión de tu vida bb  💕.</p>
+      <p>Decisión correcta, ya sabía que aceptarías. Tomaste la mejor decisión de tu vida bb 💕.</p>
       <img src="https://play-lh.googleusercontent.com/8_GpSFgLqA1NNhT61wJz01W2HI-GxzpnBvozs4stXN4sAJax-CbNT7rajmkTo_Iiog" alt="Imagen Romántica">
     </div>
   </div>
-  
+
   <script>
     const messages = [
-    "Yo sé que quieres 😉",
-    "Se notan tus ganas por decir que sí 😏",
-    "No se haga la difícil 😜",
-    "Sabía que no podrías resistirte 😍",
-    "Aún lo dudas 🤨",
-    "Vas a aceptar tarde o temprano 😘",
-    "¿A quién engañas? Yo sé que me quieres 💖",
-    "¿Segura de esa respuesta? 🤔",
-    "Vamos, dale otra oportunidad 💬",
-    "Tu mirada lo dice todo 👀",
-    "¿Y si lo pensamos de nuevo? 🤭",
-    "El destino nos quiere juntos ✨",
-    "Reconsideremos esa respuesta 😌",
-    "Tu sonrisa delata tu verdad 😊",
-    "El amor siempre gana 💕"
+      "Yo sé que quieres 😉",
+      "Se notan tus ganas por decir que sí 😏",
+      "No se haga la difícil 😜",
+      "Sabía que no podrías resistirte 😍",
+      "Aún lo dudas 🤨",
+      "Vas a aceptar tarde o temprano 😘",
+      "¿A quién engañas? Yo sé que me quieres 💖",
+      "¿Segura de esa respuesta? 🤔",
+      "Vamos, dale otra oportunidad 💬",
+      "Tu mirada lo dice todo 👀",
+      "¿Y si lo pensamos de nuevo? 🤭",
+      "El destino nos quiere juntos ✨",
+      "Reconsideremos esa respuesta 😌",
+      "Tu sonrisa delata tu verdad 😊",
+      "El amor siempre gana 💕"
     ];
     let messageIndex = 0;
-    
+
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
     const messageDiv = document.getElementById("message");
@@ -182,71 +157,31 @@
     const closeBtn = document.getElementById("closeBtn");
 
     function moveButton() {
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 20);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 20);
+      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 150);
       noBtn.style.position = "absolute";
-      noBtn.classList.add("moving");
       noBtn.style.left = `${x}px`;
       noBtn.style.top = `${y}px`;
     }
-    
-    noBtn.addEventListener("click", function() {
-      messageDiv.textContent = messages[messageIndex];
-      messageIndex = (messageIndex + 1) % messages.length;
-      moveButton();
-    });
-    
-    yesBtn.addEventListener("click", function() {
-      modal.style.display = "block";
-      lanzarConfeti();
-    });
-    
-    closeBtn.addEventListener("click", function() {
-      modal.style.display = "none";
-    });
-    
-    window.addEventListener("click", function(event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
+
+    function lanzarCorazones() {
+      for (let i = 0; i < 10; i++) { // Se lanzan más corazones
+        setTimeout(() => {
+          const heart = document.createElement("div");
+          heart.innerHTML = "💖";
+          heart.style.position = "fixed";
+          heart.style.left = Math.random() * 100 + "vw";
+          heart.style.bottom = "0px";
+          heart.style.fontSize = Math.random() * 30 + 20 + "px";
+          heart.style.animation = "subir 2s linear forwards";
+          document.body.appendChild(heart);
+
+          setTimeout(() => {
+            heart.remove();
+          }, 2000);
+        }, i * 100);
       }
-    });
-    // Función para lanzar emojis flotantes
-function lanzarCorazones() {
-  const heart = document.createElement("div");
-  heart.innerHTML = "💖";
-  heart.style.position = "fixed";
-  heart.style.left = Math.random() * 100 + "vw";
-  heart.style.bottom = "0px";
-  heart.style.fontSize = Math.random() * 30 + 20 + "px";
-  heart.style.animation = "subir 2s linear forwards";
-  document.body.appendChild(heart);
-
-  setTimeout(() => {
-    heart.remove();
-  }, 2000);
-}
-
-// Cada vez que presionen "Sí", se lanzan corazones
-yesBtn.addEventListener("click", function() {
-  lanzarConfeti();
-  lanzarCorazones();
-});
-
-// Animación para subir los emojis flotantes
-const estilo = document.createElement("style");
-estilo.innerHTML = `
-@keyframes subir {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(-100vh); opacity: 0; }
-}`;
-document.head.appendChild(estilo);
-
-// Función para aumentar el tamaño del botón "Sí, acepto"
-let yesBtnSize = 1; // Tamaño inicial
-noBtn.addEventListener("click", function() {
-  yesBtnSize += 0.2; // Aumenta un 20% cada vez
-  yesBtn.style.transform = `scale(${yesBtnSize})`;
-});
+    }
 
     function lanzarConfeti() {
       confetti({
@@ -254,15 +189,32 @@ noBtn.addEventListener("click", function() {
         spread: 70,
         origin: { y: 0.6 }
       });
-      function moveButton() {
-        const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
-        const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 150); // Espacio extra para evitar superposición
-        noBtn.style.position = "absolute";
-        noBtn.classList.add("moving");
-        noBtn.style.left = `${x}px`;
-        noBtn.style.top = `${y}px`;
-      }
     }
+
+    let yesBtnSize = 1;
+    noBtn.addEventListener("click", function() {
+      messageDiv.textContent = messages[messageIndex];
+      messageIndex = (messageIndex + 1) % messages.length;
+      moveButton();
+      yesBtnSize += 0.3; // Ahora se agranda más cada vez
+      yesBtn.style.transform = `scale(${yesBtnSize})`;
+    });
+
+    yesBtn.addEventListener("click", function() {
+      modal.style.display = "block";
+      lanzarConfeti();
+      lanzarCorazones();
+    });
+
+    closeBtn.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
