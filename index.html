@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sorpresa_xd</title>
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1"></script> 
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -12,15 +13,19 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
     .container {
-      text-align: center;
-      padding-top: 100px;
       color: #333;
     }
     h1 {
       font-size: 2.5em;
       margin-bottom: 20px;
+      animation: fadeIn 1.5s ease-in-out;
     }
     #message {
       font-size: 1.5em;
@@ -29,14 +34,11 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
       min-height: 30px;
     }
-    /* Contenedor de botones centrado en la pantalla */
+    /* Contenedor de botones */
     #buttonContainer {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
       display: flex;
       gap: 20px;
+      justify-content: center;
     }
     button {
       font-size: 1.2em;
@@ -60,9 +62,14 @@
     #noBtn {
       background-color: #e53935;
       color: #fff;
+      position: relative;
     }
     #noBtn:hover {
       background-color: #d32f2f;
+    }
+    /* Efecto de movimiento suave */
+    .moving {
+      transition: top 0.5s ease, left 0.5s ease;
     }
     /* Estilos para la ventana modal */
     .modal {
@@ -73,8 +80,8 @@
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: auto;
       background-color: rgba(0,0,0,0.7);
+      animation: fadeIn 0.5s ease;
     }
     .modal-content {
       background-color: #fff;
@@ -85,7 +92,7 @@
       max-width: 500px;
       text-align: center;
       position: relative;
-      animation: fadeIn 0.5s ease;
+      animation: popUp 0.5s ease;
     }
     .modal-content p {
       font-size: 1.3em;
@@ -108,45 +115,63 @@
     .close:hover {
       color: #000;
     }
+    /* Animaciones */
     @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(-20px);}
-      to {opacity: 1; transform: translateY(0);}
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+    @keyframes popUp {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    #message {
+      position: relative;
+      z-index: 2;
+    }
+  
+    /* Ajuste de la imagen en la modal */
+    .modal-content img {
+      max-width: 80%;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div id="message"></div>
-    <h1>¿Quieres ser mi novia?</h1>
+    <h1>¿Quieres ser mi novia? 💖 </h1>
+    <div id="buttonContainer">
+      <button id="yesBtn">Si, acepto</button>
+      <button id="noBtn">No quiero</button>
+    </div>
   </div>
   
-  <!-- Contenedor de botones centrado al inicio -->
-  <div id="buttonContainer">
-    <button id="yesBtn">Si, acepto</button>
-    <button id="noBtn">No quiero</button>
-  </div>
-  
-  <!-- Ventana modal que se mostrará al aceptar -->
+  <!-- Ventana modal -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeBtn">&times;</span>
-      <p>Decisión correcta, ya sabía que aceptarías. Tomaste la mejor decisión de tu vida bb.</p>
+      <p>Decisión correcta, ya sabía que aceptarías. Tomaste la mejor decisión de tu vida bb  💕.</p>
       <img src="https://play-lh.googleusercontent.com/8_GpSFgLqA1NNhT61wJz01W2HI-GxzpnBvozs4stXN4sAJax-CbNT7rajmkTo_Iiog" alt="Imagen Romántica">
     </div>
   </div>
   
   <script>
-    // Array de mensajes para el botón "No quiero"
     const messages = [
-      "Yo sé que quieres",
-      "Se notan tus ganas por decir que si",
-      "No se haga la difícil",
-      "Sabía que no podrías resistirte",
-      "Aún lo dudas",
-      "Tu corazón ya lo decidió, bb",
-      "El destino nos quiere juntos",
-      "Vas a aceptar tarde o temprano",
-      "¿A quién engañas? Yo sé que me quieres"
+    "Yo sé que quieres 😉",
+    "Se notan tus ganas por decir que sí 😏",
+    "No se haga la difícil 😜",
+    "Sabía que no podrías resistirte 😍",
+    "Aún lo dudas 🤨",
+    "Vas a aceptar tarde o temprano 😘",
+    "¿A quién engañas? Yo sé que me quieres 💖",
+    "¿Segura de esa respuesta? 🤔",
+    "Vamos, dale otra oportunidad 💬",
+    "Tu mirada lo dice todo 👀",
+    "¿Y si lo pensamos de nuevo? 🤭",
+    "El destino nos quiere juntos ✨",
+    "Reconsideremos esa respuesta 😌",
+    "Tu sonrisa delata tu verdad 😊",
+    "El amor siempre gana 💕"
     ];
     let messageIndex = 0;
     
@@ -155,23 +180,17 @@
     const messageDiv = document.getElementById("message");
     const modal = document.getElementById("modal");
     const closeBtn = document.getElementById("closeBtn");
-    const buttonContainer = document.getElementById("buttonContainer");
 
-    // Función para mover el botón "No quiero" a una posición aleatoria dentro de la ventana
     function moveButton() {
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 20);
+      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 20);
+      noBtn.style.position = "absolute";
+      noBtn.classList.add("moving");
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
     }
     
     noBtn.addEventListener("click", function() {
-      // Si el botón está en el contenedor, se saca para poder moverlo libremente
-      if (noBtn.parentElement.id === "buttonContainer") {
-        document.body.appendChild(noBtn);
-        noBtn.style.position = "fixed";
-      }
-      // Mostrar mensaje y reiniciar la lista al llegar al final
       messageDiv.textContent = messages[messageIndex];
       messageIndex = (messageIndex + 1) % messages.length;
       moveButton();
@@ -179,6 +198,7 @@
     
     yesBtn.addEventListener("click", function() {
       modal.style.display = "block";
+      lanzarConfeti();
     });
     
     closeBtn.addEventListener("click", function() {
@@ -190,6 +210,22 @@
         modal.style.display = "none";
       }
     });
+
+    function lanzarConfeti() {
+      confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      function moveButton() {
+        const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+        const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 150); // Espacio extra para evitar superposición
+        noBtn.style.position = "absolute";
+        noBtn.classList.add("moving");
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+      }
+    }
   </script>
 </body>
 </html>
