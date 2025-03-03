@@ -210,6 +210,43 @@
         modal.style.display = "none";
       }
     });
+    // Función para lanzar emojis flotantes
+function lanzarCorazones() {
+  const heart = document.createElement("div");
+  heart.innerHTML = "💖";
+  heart.style.position = "fixed";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.bottom = "0px";
+  heart.style.fontSize = Math.random() * 30 + 20 + "px";
+  heart.style.animation = "subir 2s linear forwards";
+  document.body.appendChild(heart);
+
+  setTimeout(() => {
+    heart.remove();
+  }, 2000);
+}
+
+// Cada vez que presionen "Sí", se lanzan corazones
+yesBtn.addEventListener("click", function() {
+  lanzarConfeti();
+  lanzarCorazones();
+});
+
+// Animación para subir los emojis flotantes
+const estilo = document.createElement("style");
+estilo.innerHTML = `
+@keyframes subir {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100vh); opacity: 0; }
+}`;
+document.head.appendChild(estilo);
+
+// Función para aumentar el tamaño del botón "Sí, acepto"
+let yesBtnSize = 1; // Tamaño inicial
+noBtn.addEventListener("click", function() {
+  yesBtnSize += 0.2; // Aumenta un 20% cada vez
+  yesBtn.style.transform = `scale(${yesBtnSize})`;
+});
 
     function lanzarConfeti() {
       confetti({
