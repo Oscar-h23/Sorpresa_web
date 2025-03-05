@@ -19,8 +19,53 @@
       align-items: center;
       text-align: center;
     }
+    /* Modal inicial */
+    #introModal {
+      display: flex;
+      position: fixed;
+      z-index: 102;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+    #introModal .modal-content {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+    }
+    #introModal p {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    #introModal button {
+      font-size: 1.2em;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    }
+    #introModal button:hover {
+      background-color: #43a047;
+      transform: scale(1.05);
+    }
+    /* Contenedor principal */
     .container {
       color: #333;
+      display: none;
+      position: relative;
     }
     h1 {
       font-size: 2.5em;
@@ -60,11 +105,12 @@
     #noBtn {
       background-color: #e53935;
       color: #fff;
-      position: relative;
+      /* Se elimina "position: relative" ya que usaremos "fixed" en moveButton() */
     }
     #noBtn:hover {
       background-color: #d32f2f;
     }
+    /* Modal final */
     .modal {
       display: none;
       position: fixed;
@@ -74,6 +120,8 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
     }
     .modal-content {
       background-color: #fff;
@@ -84,6 +132,7 @@
       max-width: 500px;
       text-align: center;
       position: relative;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
     }
     .modal-content p {
       font-size: 1.3em;
@@ -91,7 +140,8 @@
       color: #333;
     }
     .modal-content img {
-      max-width: 100%;
+      max-width: 300px;
+      width: 100%;
       border-radius: 10px;
     }
     .close {
@@ -113,15 +163,25 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <!-- Modal inicial -->
+  <div id="introModal">
+    <div class="modal-content">
+      <p>Sorpresa para Ingeebria 🥴</p>
+      <button id="startBtn">Click aquí para que recibas tu sorpresa</button>
+    </div>
+  </div>
+
+  <!-- Contenedor principal -->
+  <div class="container" id="mainContainer">
     <div id="message"></div>
-    <h1>¿Quieres ser mi novia? 💖 </h1>
+    <h1>¿Quieres ser mi novia? 💖</h1>
     <div id="buttonContainer">
       <button id="yesBtn">Si, acepto</button>
       <button id="noBtn">No quiero</button>
     </div>
   </div>
-  
+
+  <!-- Modal final -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeBtn">&times;</span>
@@ -131,6 +191,16 @@
   </div>
 
   <script>
+    // Modal inicial: Oculta el modal y muestra el contenedor principal al hacer click
+    const introModal = document.getElementById("introModal");
+    const startBtn = document.getElementById("startBtn");
+    const mainContainer = document.getElementById("mainContainer");
+    startBtn.addEventListener("click", function() {
+      introModal.style.display = "none";
+      mainContainer.style.display = "block";
+    });
+
+    // Lógica de la pregunta
     const messages = [
       "Yo sé que quieres 😉",
       "Se notan tus ganas por decir que sí 😏",
@@ -149,23 +219,30 @@
       "El amor siempre gana 💕"
     ];
     let messageIndex = 0;
-
     const noBtn = document.getElementById("noBtn");
     const yesBtn = document.getElementById("yesBtn");
     const messageDiv = document.getElementById("message");
     const modal = document.getElementById("modal");
     const closeBtn = document.getElementById("closeBtn");
 
+    // Función para mover el botón "No quiero" sin tapar la pregunta
     function moveButton() {
-      const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
-      const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 150);
-      noBtn.style.position = "absolute";
-      noBtn.style.left = `${x}px`;
-      noBtn.style.top = `${y}px`;
+      const h1 = document.querySelector("h1");
+      const h1Rect = h1.getBoundingClientRect();
+      const minY = h1Rect.bottom + 20; // margen debajo de la pregunta
+      const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+      const randomY = Math.random() * (maxY - minY) + minY;
+      const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+      const randomX = Math.random() * maxX + 10;
+      // Usamos "fixed" para que el botón se posicione relativo a la ventana
+      noBtn.style.position = "fixed";
+      noBtn.style.left = `${randomX}px`;
+      noBtn.style.top = `${randomY}px`;
     }
 
+    // Función para lanzar corazones
     function lanzarCorazones() {
-      for (let i = 0; i < 10; i++) { // Se lanzan más corazones
+      for (let i = 0; i < 10; i++) {
         setTimeout(() => {
           const heart = document.createElement("div");
           heart.innerHTML = "💖";
@@ -175,7 +252,6 @@
           heart.style.fontSize = Math.random() * 30 + 20 + "px";
           heart.style.animation = "subir 2s linear forwards";
           document.body.appendChild(heart);
-
           setTimeout(() => {
             heart.remove();
           }, 2000);
@@ -183,6 +259,7 @@
       }
     }
 
+    // Función para lanzar confeti
     function lanzarConfeti() {
       confetti({
         particleCount: 150,
@@ -196,12 +273,12 @@
       messageDiv.textContent = messages[messageIndex];
       messageIndex = (messageIndex + 1) % messages.length;
       moveButton();
-      yesBtnSize += 0.3; // Ahora se agranda más cada vez
+      yesBtnSize += 0.3; // Incrementa el tamaño del botón "Si, acepto"
       yesBtn.style.transform = `scale(${yesBtnSize})`;
     });
 
     yesBtn.addEventListener("click", function() {
-      modal.style.display = "block";
+      modal.style.display = "flex"; // Centra la ventana modal
       lanzarConfeti();
       lanzarCorazones();
     });
